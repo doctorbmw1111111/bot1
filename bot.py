@@ -3,8 +3,8 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 
 TOKEN = "8078550274:AAEp_DLqDdFZwK-nO0EIeHGO7DriS5Y92pg"
 
-# Названия каналов и их chat_id (например, "@channelusername")
-buttons = ["Презентация", "Инструкция", "FAQ", "Связь"]
+# ГЌГ Г§ГўГ Г­ГЁГї ГЄГ Г­Г Г«Г®Гў ГЁ ГЁГµ chat_id (Г­Г ГЇГ°ГЁГ¬ГҐГ°, "@channelusername")Р°Р°
+buttons = ["ГЏГ°ГҐГ§ГҐГ­ГІГ Г¶ГЁГї", "Г€Г­Г±ГІГ°ГіГЄГ¶ГЁГї", "FAQ", "Г‘ГўГїГ§Гј"]
 channels = ["@hant2025001", "@hant2025001", "@hant2025001", "@hant2025004"]  # Caiaieoa ia ?aaeuiua eaiaeu
 
 # Iannea n message_id aey ea?aiai eaiaea
@@ -15,31 +15,31 @@ message_ids = [
     [2]
 ]
 
-# GS условное id сообщения / id сообщения реальное / порядок канала с контактами и др инф в массиве_buttons / ID сообщения для старт
+# GS ГіГ±Г«Г®ГўГ­Г®ГҐ id Г±Г®Г®ГЎГ№ГҐГ­ГЁГї / id Г±Г®Г®ГЎГ№ГҐГ­ГЁГї Г°ГҐГ Г«ГјГ­Г®ГҐ / ГЇГ®Г°ГїГ¤Г®ГЄ ГЄГ Г­Г Г«Г  Г± ГЄГ®Г­ГІГ ГЄГІГ Г¬ГЁ ГЁ Г¤Г° ГЁГ­Гґ Гў Г¬Г Г±Г±ГЁГўГҐ_buttons / ID Г±Г®Г®ГЎГ№ГҐГ­ГЁГї Г¤Г«Гї Г±ГІГ Г°ГІ
 gslast = [777, 2, 4, 6 ]
 
-# Для хранения текущих позиций сообщений
+# Г„Г«Гї ГµГ°Г Г­ГҐГ­ГЁГї ГІГҐГЄГіГ№ГЁГµ ГЇГ®Г§ГЁГ¶ГЁГ© Г±Г®Г®ГЎГ№ГҐГ­ГЁГ©
 user_positions = {}
 
-# Словарь для хранения message_id предыдущих сообщений
+# Г‘Г«Г®ГўГ Г°Гј Г¤Г«Гї ГµГ°Г Г­ГҐГ­ГЁГї message_id ГЇГ°ГҐГ¤Г»Г¤ГіГ№ГЁГµ Г±Г®Г®ГЎГ№ГҐГ­ГЁГ©
 previous_messages = {}
 
 async def start(update, context):
-    print("Команда /start получена")  # Логирование
+    print("ГЉГ®Г¬Г Г­Г¤Г  /start ГЇГ®Г«ГіГ·ГҐГ­Г ")  # Г‹Г®ГЈГЁГ°Г®ГўГ Г­ГЁГҐ
 
-    try:#GS удаляем команду бота
-        await update.message.delete()  # Удаляем командное сообщение
+    try:#GS ГіГ¤Г Г«ГїГҐГ¬ ГЄГ®Г¬Г Г­Г¤Гі ГЎГ®ГІГ 
+        await update.message.delete()  # Г“Г¤Г Г«ГїГҐГ¬ ГЄГ®Г¬Г Г­Г¤Г­Г®ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ
     except Exception as e:
-            print(f"Не удалось удалить командное сообщение: {e}")
+            print(f"ГЌГҐ ГіГ¤Г Г«Г®Г±Гј ГіГ¤Г Г«ГЁГІГј ГЄГ®Г¬Г Г­Г¤Г­Г®ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ: {e}")
 
-    #GS имя пользователя
+    #GS ГЁГ¬Гї ГЇГ®Г«ГјГ§Г®ГўГ ГІГҐГ«Гї
     user = update.message.from_user
-    # Собираем части имени, игнорируя пустые значения
+    # Г‘Г®ГЎГЁГ°Г ГҐГ¬ Г·Г Г±ГІГЁ ГЁГ¬ГҐГ­ГЁ, ГЁГЈГ­Г®Г°ГЁГ°ГіГї ГЇГіГ±ГІГ»ГҐ Г§Г­Г Г·ГҐГ­ГЁГї
     name_parts = []
     if user.first_name:
         name_parts.append(user.first_name)
     #if user.last_name:        name_parts.append(user.last_name)
-    # Формируем итоговую строку
+    # Г”Г®Г°Г¬ГЁГ°ГіГҐГ¬ ГЁГІГ®ГЈГ®ГўГіГѕ Г±ГІГ°Г®ГЄГі
     full_name = " ".join(name_parts) if name_parts else ""
 
     
@@ -47,35 +47,35 @@ async def start(update, context):
     keyboard = [[buttons[0],buttons[1]],[buttons[2],buttons[3]]]
 
     reply_markup = ReplyKeyboardMarkup(keyboard,  one_time_keyboard=False, resize_keyboard=True)
-    await update.message.reply_text(f"Здравствуйте,: @{full_name}!", reply_markup=reply_markup)
+    await update.message.reply_text(f"Г‡Г¤Г°Г ГўГ±ГІГўГіГ©ГІГҐ,: @{full_name}!", reply_markup=reply_markup)
 
-    try:#GS первое сообщение бота
-    # Копируем сообщение из канала
+    try:#GS ГЇГҐГ°ГўГ®ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ ГЎГ®ГІГ 
+    # ГЉГ®ГЇГЁГ°ГіГҐГ¬ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ ГЁГ§ ГЄГ Г­Г Г«Г 
         msg = await context.bot.copy_message(
             chat_id=update.effective_chat.id,
             from_chat_id=channels[gslast[2]-1],
             message_id=gslast[3]
         )
     except Exception as e:
-        print(f"Ошибка при копировании сообщения1: {e}")
+        print(f"ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ ГЄГ®ГЇГЁГ°Г®ГўГ Г­ГЁГЁ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї1: {e}")
 
 
 async def button(update, context):
-    print("Кнопка нажата:", update.message.text)  # Логирование
+    print("ГЉГ­Г®ГЇГЄГ  Г­Г Г¦Г ГІГ :", update.message.text)  # Г‹Г®ГЈГЁГ°Г®ГўГ Г­ГЁГҐ
 
-    try:#GS удаляем команду бота
-        await update.message.delete()  # Удаляем командное сообщение
+    try:#GS ГіГ¤Г Г«ГїГҐГ¬ ГЄГ®Г¬Г Г­Г¤Гі ГЎГ®ГІГ 
+        await update.message.delete()  # Г“Г¤Г Г«ГїГҐГ¬ ГЄГ®Г¬Г Г­Г¤Г­Г®ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ
     except Exception as e:
-            print(f"Не удалось удалить командное сообщение: {e}")
+            print(f"ГЌГҐ ГіГ¤Г Г«Г®Г±Гј ГіГ¤Г Г«ГЁГІГј ГЄГ®Г¬Г Г­Г¤Г­Г®ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ: {e}")
 
     user_id = update.message.from_user.id
-    # Найдем индекс канала по тексту кнопки
+    # ГЌГ Г©Г¤ГҐГ¬ ГЁГ­Г¤ГҐГЄГ± ГЄГ Г­Г Г«Г  ГЇГ® ГІГҐГЄГ±ГІГі ГЄГ­Г®ГЇГЄГЁ
     channel_index = buttons.index(update.message.text)
 
-    # Сохраняем текущий индекс канала
+    # Г‘Г®ГµГ°Г Г­ГїГҐГ¬ ГІГҐГЄГіГ№ГЁГ© ГЁГ­Г¤ГҐГЄГ± ГЄГ Г­Г Г«Г 
     user_positions[user_id] = {"channel_index": channel_index, "message_index": 0}
 
-    # Отправляем первое сообщение из выбранного канала
+    # ГЋГІГЇГ°Г ГўГ«ГїГҐГ¬ ГЇГҐГ°ГўГ®ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ ГЁГ§ ГўГ»ГЎГ°Г Г­Г­Г®ГЈГ® ГЄГ Г­Г Г«Г 
     await send_message(update, context, user_id)
 
 async def send_message(update, context, user_id):
@@ -85,38 +85,38 @@ async def send_message(update, context, user_id):
     channel = channels[channel_index]
     message_id = message_ids[channel_index][message_index]
 
-    #GS если последнее сообщение то вставляем страничку контактов
+    #GS ГҐГ±Г«ГЁ ГЇГ®Г±Г«ГҐГ¤Г­ГҐГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ ГІГ® ГўГ±ГІГ ГўГ«ГїГҐГ¬ Г±ГІГ°Г Г­ГЁГ·ГЄГі ГЄГ®Г­ГІГ ГЄГІГ®Гў
     if message_id == gslast[0] :
         channel = channels[gslast[2]-1]
         message_id =gslast[1]
 
     inline_keyboard = [
-        [InlineKeyboardButton("Назад", callback_data="back"),
-         InlineKeyboardButton("Далее", callback_data="next")]
+        [InlineKeyboardButton("ГЌГ Г§Г Г¤", callback_data="back"),
+         InlineKeyboardButton("Г„Г Г«ГҐГҐ", callback_data="next")]
     ]
     reply_markup = InlineKeyboardMarkup(inline_keyboard)
 
     chat_id = update.effective_chat.id
 
-    # Удаляем предыдущее сообщение, если оно существует
+    # Г“Г¤Г Г«ГїГҐГ¬ ГЇГ°ГҐГ¤Г»Г¤ГіГ№ГҐГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ, ГҐГ±Г«ГЁ Г®Г­Г® Г±ГіГ№ГҐГ±ГІГўГіГҐГІ
     if user_id in previous_messages:
         prev_message_id = previous_messages[user_id]
         try:
             await context.bot.delete_message(chat_id, prev_message_id)
         except Exception as e:
-            print(f"Ошибка при удалении сообщения: {e}")
+            print(f"ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ ГіГ¤Г Г«ГҐГ­ГЁГЁ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї: {e}")
 
     try:
-        # Копируем сообщение из канала
+        # ГЉГ®ГЇГЁГ°ГіГҐГ¬ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ ГЁГ§ ГЄГ Г­Г Г«Г 
         msg = await context.bot.copy_message(
             chat_id=chat_id,
             from_chat_id=channel,
             message_id=message_id
         )
-        # Сохраняем message_id текущего сообщения, чтобы в следующий раз его удалить
+        # Г‘Г®ГµГ°Г Г­ГїГҐГ¬ message_id ГІГҐГЄГіГ№ГҐГЈГ® Г±Г®Г®ГЎГ№ГҐГ­ГЁГї, Г·ГІГ®ГЎГ» Гў Г±Г«ГҐГ¤ГіГѕГ№ГЁГ© Г°Г Г§ ГҐГЈГ® ГіГ¤Г Г«ГЁГІГј
         previous_messages[user_id] = msg.message_id
 
-        # Добавляем инлайн-клавиатуру к скопированному сообщению
+        # Г„Г®ГЎГ ГўГ«ГїГҐГ¬ ГЁГ­Г«Г Г©Г­-ГЄГ«Г ГўГЁГ ГІГіГ°Гі ГЄ Г±ГЄГ®ГЇГЁГ°Г®ГўГ Г­Г­Г®Г¬Гі Г±Г®Г®ГЎГ№ГҐГ­ГЁГѕ
         await context.bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=msg.message_id,
@@ -124,15 +124,15 @@ async def send_message(update, context, user_id):
         )
 
     except Exception as e:
-        print(f"Ошибка при копировании сообщения: {e}")
+        print(f"ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ ГЄГ®ГЇГЁГ°Г®ГўГ Г­ГЁГЁ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї: {e}")
 
 async def navigation(update, context):
-    print("Навигация: ", update.callback_query.data)  # Логирование
+    print("ГЌГ ГўГЁГЈГ Г¶ГЁГї: ", update.callback_query.data)  # Г‹Г®ГЈГЁГ°Г®ГўГ Г­ГЁГҐ
     query = update.callback_query
     user_id = query.from_user.id
 
     if user_id not in user_positions:
-        print(f"Нет позиции для пользователя {user_id}")  # Логирование
+        print(f"ГЌГҐГІ ГЇГ®Г§ГЁГ¶ГЁГЁ Г¤Г«Гї ГЇГ®Г«ГјГ§Г®ГўГ ГІГҐГ«Гї {user_id}")  # Г‹Г®ГЈГЁГ°Г®ГўГ Г­ГЁГҐ
         return
 
     user_data = user_positions[user_id]
@@ -143,27 +143,27 @@ async def navigation(update, context):
         if message_index < len(message_ids[channel_index]) - 1:
             user_positions[user_id]["message_index"] = message_index + 1
         else:
-            user_positions[user_id]["message_index"] = 0  # Зациклили на первое сообщение
+            user_positions[user_id]["message_index"] = 0  # Г‡Г Г¶ГЁГЄГ«ГЁГ«ГЁ Г­Г  ГЇГҐГ°ГўГ®ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ
     elif query.data == "back":
         if message_index > 0:
             user_positions[user_id]["message_index"] = message_index - 1
         else:
-      #      user_positions[user_id]["message_index"] = 0  # Зациклили на последнее 
-            user_positions[user_id]["message_index"] = len(message_ids[channel_index]) - 1  # Зациклили на последнее сообщение
+      #      user_positions[user_id]["message_index"] = 0  # Г‡Г Г¶ГЁГЄГ«ГЁГ«ГЁ Г­Г  ГЇГ®Г±Г«ГҐГ¤Г­ГҐГҐ 
+            user_positions[user_id]["message_index"] = len(message_ids[channel_index]) - 1  # Г‡Г Г¶ГЁГЄГ«ГЁГ«ГЁ Г­Г  ГЇГ®Г±Г«ГҐГ¤Г­ГҐГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ
 
     await send_message(update, context, user_id)
 
 def main():
-    print("Запуск бота...")
+    print("Г‡Г ГЇГіГ±ГЄ ГЎГ®ГІГ ...")
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, button))
     application.add_handler(CallbackQueryHandler(navigation, pattern="^(next|back)$"))
 
-    print("Бот подключен и работает...")
+    print("ГЃГ®ГІ ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­ ГЁ Г°Г ГЎГ®ГІГ ГҐГІ...")
     application.run_polling()
 
 if __name__ == '__main__':
-    print("Запуск polling...")
-    main()  # Прямой вызов main() без asyncio.run()
+    print("Г‡Г ГЇГіГ±ГЄ polling...")
+    main()  # ГЏГ°ГїГ¬Г®Г© ГўГ»Г§Г®Гў main() ГЎГҐГ§ asyncio.run()
