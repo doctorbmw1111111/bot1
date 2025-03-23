@@ -4,7 +4,7 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 TOKEN = "8078550274:AAEp_DLqDdFZwK-nO0EIeHGO7DriS5Y92pg"
 
 # Íàçâàíèÿ êàíàëîâ è èõ chat_id (íàïðèìåð, "@channelusername")аа
-buttons = ["Ïðåçåíòàöèÿ", "Èíñòðóêöèÿ", "FAQ", "Ñâÿçü"]
+buttons = ["пррооьтьт", "Èíñòðóêöèÿ", "FAQ", "Ñâÿçü"]
 channels = ["@hant2025001", "@hant2025001", "@hant2025001", "@hant2025004"]  # Caiaieoa ia ?aaeuiua eaiaeu
 
 # Iannea n message_id aey ea?aiai eaiaea
