@@ -1,10 +1,11 @@
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 
 TOKEN = "8078550274:AAEp_DLqDdFZwK-nO0EIeHGO7DriS5Y92pg"
 
-# Íàçâàíèÿ êàíàëîâ è èõ chat_id (íàïðèìåð, "@channelusername")аа
-buttons = ["пррооьтьт", "777Èíñòðóêöèÿ", "FAQ", "Ñâÿçü"]
+# Названия каналов и их chat_id (например, "@channelusername")
+buttons = ["Презентация", "Инструкция", "FAQ", "Связь"]
 channels = ["@hant2025001", "@hant2025001", "@hant2025001", "@hant2025004"]  # Caiaieoa ia ?aaeuiua eaiaeu
 
 # Iannea n message_id aey ea?aiai eaiaea
@@ -15,31 +16,31 @@ message_ids = [
     [2]
 ]
 
-# GS óñëîâíîå id ñîîáùåíèÿ / id ñîîáùåíèÿ ðåàëüíîå / ïîðÿäîê êàíàëà ñ êîíòàêòàìè è äð èíô â ìàññèâå_buttons / ID ñîîáùåíèÿ äëÿ ñòàðò
+# GS условное id сообщения / id сообщения реальное / порядок канала с контактами и др инф в массиве_buttons / ID сообщения для старт
 gslast = [777, 2, 4, 6 ]
 
-# Äëÿ õðàíåíèÿ òåêóùèõ ïîçèöèé ñîîáùåíèé
+# Для хранения текущих позиций сообщений
 user_positions = {}
 
-# Ñëîâàðü äëÿ õðàíåíèÿ message_id ïðåäûäóùèõ ñîîáùåíèé
+# Словарь для хранения message_id предыдущих сообщений
 previous_messages = {}
 
 async def start(update, context):
-    print("Êîìàíäà /start ïîëó÷åíà")  # Ëîãèðîâàíèå
+    print("Команда /start получена")  # Логирование
 
-    try:#GS óäàëÿåì êîìàíäó áîòà
-        await update.message.delete()  # Óäàëÿåì êîìàíäíîå ñîîáùåíèå
+    try:#GS удаляем команду бота
+        await update.message.delete()  # Удаляем командное сообщение
     except Exception as e:
-            print(f"Íå óäàëîñü óäàëèòü êîìàíäíîå ñîîáùåíèå: {e}")
+            print(f"Не удалось удалить командное сообщение: {e}")
 
-    #GS èìÿ ïîëüçîâàòåëÿ
+    #GS имя пользователя
     user = update.message.from_user
-    # Ñîáèðàåì ÷àñòè èìåíè, èãíîðèðóÿ ïóñòûå çíà÷åíèÿ
+    # Собираем части имени, игнорируя пустые значения
     name_parts = []
     if user.first_name:
         name_parts.append(user.first_name)
     #if user.last_name:        name_parts.append(user.last_name)
-    # Ôîðìèðóåì èòîãîâóþ ñòðîêó
+    # Формируем итоговую строку
     full_name = " ".join(name_parts) if name_parts else ""
 
     
@@ -47,35 +48,35 @@ async def start(update, context):
     keyboard = [[buttons[0],buttons[1]],[buttons[2],buttons[3]]]
 
     reply_markup = ReplyKeyboardMarkup(keyboard,  one_time_keyboard=False, resize_keyboard=True)
-    await update.message.reply_text(f"Çäðàâñòâóéòå,: @{full_name}!", reply_markup=reply_markup)
+    await update.message.reply_text(f"Здравствуйте,: @{full_name}!", reply_markup=reply_markup)
 
-    try:#GS ïåðâîå ñîîáùåíèå áîòà
-    # Êîïèðóåì ñîîáùåíèå èç êàíàëà
+    try:#GS первое сообщение бота
+    # Копируем сообщение из канала
         msg = await context.bot.copy_message(
             chat_id=update.effective_chat.id,
             from_chat_id=channels[gslast[2]-1],
             message_id=gslast[3]
         )
     except Exception as e:
-        print(f"Îøèáêà ïðè êîïèðîâàíèè ñîîáùåíèÿ1: {e}")
+        print(f"Ошибка при копировании сообщения1: {e}")
 
 
 async def button(update, context):
-    print("Êíîïêà íàæàòà:", update.message.text)  # Ëîãèðîâàíèå
+    print("Кнопка нажата:", update.message.text)  # Логирование
 
-    try:#GS óäàëÿåì êîìàíäó áîòà
-        await update.message.delete()  # Óäàëÿåì êîìàíäíîå ñîîáùåíèå
+    try:#GS удаляем команду бота
+        await update.message.delete()  # Удаляем командное сообщение
     except Exception as e:
-            print(f"Íå óäàëîñü óäàëèòü êîìàíäíîå ñîîáùåíèå: {e}")
+            print(f"Не удалось удалить командное сообщение: {e}")
 
     user_id = update.message.from_user.id
-    # Íàéäåì èíäåêñ êàíàëà ïî òåêñòó êíîïêè
+    # Найдем индекс канала по тексту кнопки
     channel_index = buttons.index(update.message.text)
 
-    # Ñîõðàíÿåì òåêóùèé èíäåêñ êàíàëà
+    # Сохраняем текущий индекс канала
     user_positions[user_id] = {"channel_index": channel_index, "message_index": 0}
 
-    # Îòïðàâëÿåì ïåðâîå ñîîáùåíèå èç âûáðàííîãî êàíàëà
+    # Отправляем первое сообщение из выбранного канала
     await send_message(update, context, user_id)
 
 async def send_message(update, context, user_id):
@@ -85,38 +86,38 @@ async def send_message(update, context, user_id):
     channel = channels[channel_index]
     message_id = message_ids[channel_index][message_index]
 
-    #GS åñëè ïîñëåäíåå ñîîáùåíèå òî âñòàâëÿåì ñòðàíè÷êó êîíòàêòîâ
+    #GS если последнее сообщение то вставляем страничку контактов
     if message_id == gslast[0] :
         channel = channels[gslast[2]-1]
         message_id =gslast[1]
 
     inline_keyboard = [
-        [InlineKeyboardButton("Íàçàä", callback_data="back"),
-         InlineKeyboardButton("Äàëåå", callback_data="next")]
+        [InlineKeyboardButton("Назад", callback_data="back"),
+         InlineKeyboardButton("Далее", callback_data="next")]
     ]
     reply_markup = InlineKeyboardMarkup(inline_keyboard)
 
     chat_id = update.effective_chat.id
 
-    # Óäàëÿåì ïðåäûäóùåå ñîîáùåíèå, åñëè îíî ñóùåñòâóåò
+    # Удаляем предыдущее сообщение, если оно существует
     if user_id in previous_messages:
         prev_message_id = previous_messages[user_id]
         try:
             await context.bot.delete_message(chat_id, prev_message_id)
         except Exception as e:
-            print(f"Îøèáêà ïðè óäàëåíèè ñîîáùåíèÿ: {e}")
+            print(f"Ошибка при удалении сообщения: {e}")
 
     try:
-        # Êîïèðóåì ñîîáùåíèå èç êàíàëà
+        # Копируем сообщение из канала
         msg = await context.bot.copy_message(
             chat_id=chat_id,
             from_chat_id=channel,
             message_id=message_id
         )
-        # Ñîõðàíÿåì message_id òåêóùåãî ñîîáùåíèÿ, ÷òîáû â ñëåäóþùèé ðàç åãî óäàëèòü
+        # Сохраняем message_id текущего сообщения, чтобы в следующий раз его удалить
         previous_messages[user_id] = msg.message_id
 
-        # Äîáàâëÿåì èíëàéí-êëàâèàòóðó ê ñêîïèðîâàííîìó ñîîáùåíèþ
+        # Добавляем инлайн-клавиатуру к скопированному сообщению
         await context.bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=msg.message_id,
@@ -124,15 +125,15 @@ async def send_message(update, context, user_id):
         )
 
     except Exception as e:
-        print(f"Îøèáêà ïðè êîïèðîâàíèè ñîîáùåíèÿ: {e}")
+        print(f"Ошибка при копировании сообщения: {e}")
 
 async def navigation(update, context):
-    print("Íàâèãàöèÿ: ", update.callback_query.data)  # Ëîãèðîâàíèå
+    print("Навигация: ", update.callback_query.data)  # Логирование
     query = update.callback_query
     user_id = query.from_user.id
 
     if user_id not in user_positions:
-        print(f"Íåò ïîçèöèè äëÿ ïîëüçîâàòåëÿ {user_id}")  # Ëîãèðîâàíèå
+        print(f"Нет позиции для пользователя {user_id}")  # Логирование
         return
 
     user_data = user_positions[user_id]
@@ -143,27 +144,27 @@ async def navigation(update, context):
         if message_index < len(message_ids[channel_index]) - 1:
             user_positions[user_id]["message_index"] = message_index + 1
         else:
-            user_positions[user_id]["message_index"] = 0  # Çàöèêëèëè íà ïåðâîå ñîîáùåíèå
+            user_positions[user_id]["message_index"] = 0  # Зациклили на первое сообщение
     elif query.data == "back":
         if message_index > 0:
             user_positions[user_id]["message_index"] = message_index - 1
         else:
-      #      user_positions[user_id]["message_index"] = 0  # Çàöèêëèëè íà ïîñëåäíåå 
-            user_positions[user_id]["message_index"] = len(message_ids[channel_index]) - 1  # Çàöèêëèëè íà ïîñëåäíåå ñîîáùåíèå
+      #      user_positions[user_id]["message_index"] = 0  # Зациклили на последнее 
+            user_positions[user_id]["message_index"] = len(message_ids[channel_index]) - 1  # Зациклили на последнее сообщение
 
     await send_message(update, context, user_id)
 
 def main():
-    print("Çàïóñê áîòà...")
+    print("Запуск бота...")
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, button))
     application.add_handler(CallbackQueryHandler(navigation, pattern="^(next|back)$"))
 
-    print("Áîò ïîäêëþ÷åí è ðàáîòàåò...")
+    print("Бот подключен и работает...")
     application.run_polling()
 
 if __name__ == '__main__':
-    print("Çàïóñê polling...")
-    main()  # Ïðÿìîé âûçîâ main() áåç asyncio.run()
+    print("Запуск polling...")
+    main()  # Прямой вызов main() без asyncio.run()
