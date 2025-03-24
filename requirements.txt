@@ -1,2 +1,4 @@
 python-telegram-bot==20.0
-flask==2.2.2
+flask
+werkzeug<2.1
+
