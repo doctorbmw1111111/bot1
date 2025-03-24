@@ -1,23 +1,26 @@
-
+﻿# -*- coding: utf-8 -*-
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
+import os
+import threading
+from flask import Flask  # ### WEB SERVER START: Импорт Flask
 
 TOKEN = "8078550274:AAEp_DLqDdFZwK-nO0EIeHGO7DriS5Y92pg"
 
 # Названия каналов и их chat_id (например, "@channelusername")
-buttons = ["7Презентация", "Инструкция", "FAQ", "Связь"]
+buttons = ["Презентация", "Инструкция", "FAQ", "Связь"]
 channels = ["@hant2025001", "@hant2025001", "@hant2025001", "@hant2025004"]  # Caiaieoa ia ?aaeuiua eaiaeu
 
 # Iannea n message_id aey ea?aiai eaiaea
 message_ids = [
-    [2, 3, 4, 5,777],  # message_id  
-    [6, 777],  # message_id  [22345, 22346, 22347],  # message_id aey eaiaea 2
-    [6, 777],  # message_id  [32345, 32346, 32347]   # message_id aey eaiaea 3
+    [2, 3, 4, 5, 777],  # message_id  
+    [6, 777],  # message_id
+    [6, 777],  # message_id
     [2]
 ]
 
 # GS условное id сообщения / id сообщения реальное / порядок канала с контактами и др инф в массиве_buttons / ID сообщения для старт
-gslast = [777, 2, 4, 6 ]
+gslast = [777, 2, 4, 6]
 
 # Для хранения текущих позиций сообщений
 user_positions = {}
@@ -28,30 +31,22 @@ previous_messages = {}
 async def start(update, context):
     print("Команда /start получена")  # Логирование
 
-    try:#GS удаляем команду бота
+    try:
         await update.message.delete()  # Удаляем командное сообщение
     except Exception as e:
-            print(f"Не удалось удалить командное сообщение: {e}")
+        print(f"Не удалось удалить командное сообщение: {e}")
 
-    #GS имя пользователя
     user = update.message.from_user
-    # Собираем части имени, игнорируя пустые значения
     name_parts = []
     if user.first_name:
         name_parts.append(user.first_name)
-    #if user.last_name:        name_parts.append(user.last_name)
-    # Формируем итоговую строку
     full_name = " ".join(name_parts) if name_parts else ""
 
-    
- #   keyboard = [[KeyboardButton(button)] for button in buttons]
-    keyboard = [[buttons[0],buttons[1]],[buttons[2],buttons[3]]]
+    keyboard = [[buttons[0], buttons[1]], [buttons[2], buttons[3]]]
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=False, resize_keyboard=True)
+    await update.message.reply_text(f"Здравствуйте, @{full_name}!", reply_markup=reply_markup)
 
-    reply_markup = ReplyKeyboardMarkup(keyboard,  one_time_keyboard=False, resize_keyboard=True)
-    await update.message.reply_text(f"Здравствуйте,: @{full_name}!", reply_markup=reply_markup)
-
-    try:#GS первое сообщение бота
-    # Копируем сообщение из канала
+    try:
         msg = await context.bot.copy_message(
             chat_id=update.effective_chat.id,
             from_chat_id=channels[gslast[2]-1],
@@ -60,23 +55,17 @@ async def start(update, context):
     except Exception as e:
         print(f"Ошибка при копировании сообщения1: {e}")
 
-
 async def button(update, context):
     print("Кнопка нажата:", update.message.text)  # Логирование
 
-    try:#GS удаляем команду бота
+    try:
         await update.message.delete()  # Удаляем командное сообщение
     except Exception as e:
-            print(f"Не удалось удалить командное сообщение: {e}")
+        print(f"Не удалось удалить командное сообщение: {e}")
 
     user_id = update.message.from_user.id
-    # Найдем индекс канала по тексту кнопки
     channel_index = buttons.index(update.message.text)
-
-    # Сохраняем текущий индекс канала
     user_positions[user_id] = {"channel_index": channel_index, "message_index": 0}
-
-    # Отправляем первое сообщение из выбранного канала
     await send_message(update, context, user_id)
 
 async def send_message(update, context, user_id):
@@ -86,20 +75,17 @@ async def send_message(update, context, user_id):
     channel = channels[channel_index]
     message_id = message_ids[channel_index][message_index]
 
-    #GS если последнее сообщение то вставляем страничку контактов
-    if message_id == gslast[0] :
+    if message_id == gslast[0]:
         channel = channels[gslast[2]-1]
-        message_id =gslast[1]
+        message_id = gslast[1]
 
     inline_keyboard = [
         [InlineKeyboardButton("Назад", callback_data="back"),
          InlineKeyboardButton("Далее", callback_data="next")]
     ]
     reply_markup = InlineKeyboardMarkup(inline_keyboard)
-
     chat_id = update.effective_chat.id
 
-    # Удаляем предыдущее сообщение, если оно существует
     if user_id in previous_messages:
         prev_message_id = previous_messages[user_id]
         try:
@@ -108,22 +94,17 @@ async def send_message(update, context, user_id):
             print(f"Ошибка при удалении сообщения: {e}")
 
     try:
-        # Копируем сообщение из канала
         msg = await context.bot.copy_message(
             chat_id=chat_id,
             from_chat_id=channel,
             message_id=message_id
         )
-        # Сохраняем message_id текущего сообщения, чтобы в следующий раз его удалить
         previous_messages[user_id] = msg.message_id
-
-        # Добавляем инлайн-клавиатуру к скопированному сообщению
         await context.bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=msg.message_id,
             reply_markup=reply_markup
         )
-
     except Exception as e:
         print(f"Ошибка при копировании сообщения: {e}")
 
@@ -149,10 +130,21 @@ async def navigation(update, context):
         if message_index > 0:
             user_positions[user_id]["message_index"] = message_index - 1
         else:
-      #      user_positions[user_id]["message_index"] = 0  # Зациклили на последнее 
             user_positions[user_id]["message_index"] = len(message_ids[channel_index]) - 1  # Зациклили на последнее сообщение
 
     await send_message(update, context, user_id)
+
+### WEB SERVER START: Минимальный веб-сервер для открытия порта (Render)
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return "Bot is running!"
+
+def run_webserver():
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+### WEB SERVER END
 
 def main():
     print("Запуск бота...")
@@ -162,6 +154,9 @@ def main():
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, button))
     application.add_handler(CallbackQueryHandler(navigation, pattern="^(next|back)$"))
 
+    # Запускаем веб-сервер в отдельном потоке, чтобы открыть порт для Render
+    threading.Thread(target=run_webserver).start()
+    
     print("Бот подключен и работает...")
     application.run_polling()
 
